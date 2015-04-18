@@ -1,13 +1,13 @@
 require "exifr"
-require "date" 
+require "date"
 require "RMagick"
 require "csv"
 
 def set_exif_date(exifdate)
 	begin
-		return exifdate.strftime("%Y%m%d%H%M")
+		return exifdate.strtime("%Y%m%d%H%M")
 	rescue
-		return nil
+		return ''
 	end
 end
 
@@ -25,18 +25,24 @@ csv_data = Array.new()
 #processing imagefiles
 File.open('targetPaths.txt', "r:utf-8") do |f|
 	while line = f.gets
+		line = line.chomp
 		#image processing(rmagick)
-		original_img = Magick::Image.read(line.chomp).first
-		image = original_img.resize_to_fit(960, 960)
-		resized_img_path = savetarget + File.basename(line.chomp)
-		image.write(resized_img_path){
-			self.quality = 80
-		}
+		original_img = Magick::Image.read(line).first
+		resized_img_path = savetarget + File.basename(line)
+
+		if original_img.filesize >= 204800
+			image = original_img.resize_to_fit(960, 960)
+			image.write(resized_img_path){
+					self.quality = 80
+			}
+		else
+			original_img.write(resized_img_path)
+		end
 
 		#get Exif info and make csvdata
-		pic = EXIFR::JPEG.new(line.chomp) 
+		pic = EXIFR::JPEG.new(line)
 
-		csv_line = line.chomp
+		csv_line = line
 		csv_line << ','
 		csv_line << resized_img_path
 		csv_line << ','
