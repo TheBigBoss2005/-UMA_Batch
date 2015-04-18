@@ -5,7 +5,7 @@ require "csv"
 
 def set_exif_date(exifdate)
 	begin
-		return exifdate.strtime("%Y%m%d%H%M")
+		return exifdate.strftime("%Y%m%d%H%M")
 	rescue
 		return ''
 	end
