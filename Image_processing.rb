@@ -30,9 +30,6 @@ File.open('targetPaths.txt', "r:utf-8") do |f|
 		#image processing(rmagick)
 		original_img = Magick::Image.read(line).first
 		img_dirpath = File.dirname(line)
-		pic_rows = original_img.columns
-		pic_height = original_img.rows
-
 		resized_img_path = savetarget + File.basename(img_dirpath) + File.basename(line)
 
 		if original_img.filesize >= 204800
