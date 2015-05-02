@@ -22,13 +22,18 @@ end
 savetarget = ARGV[0]
 csv_data = Array.new()
 
+
 #processing imagefiles
 File.open('targetPaths.txt', "r:utf-8") do |f|
 	while line = f.gets
 		line = line.chomp
 		#image processing(rmagick)
 		original_img = Magick::Image.read(line).first
-		resized_img_path = savetarget + File.basename(line)
+		img_dirpath = File.dirname(line)
+		pic_rows = original_img.columns
+		pic_height = original_img.rows
+
+		resized_img_path = savetarget + File.basename(img_dirpath) + File.basename(line)
 
 		if original_img.filesize >= 204800
 			image = original_img.resize_to_fit(960, 960)
@@ -36,7 +41,8 @@ File.open('targetPaths.txt', "r:utf-8") do |f|
 					self.quality = 80
 			}
 		else
-			original_img.write(resized_img_path)
+			image = original_img
+			image.write(resized_img_path)
 		end
 
 		#get Exif info and make csvdata
@@ -47,7 +53,7 @@ File.open('targetPaths.txt', "r:utf-8") do |f|
 		csv_line << resized_img_path
 		csv_line << ','
 
-		if pic.model.empty?
+		if pic.model.nil?
 			csv_line << "unknown camera"
 		else
 			csv_line << pic.model
@@ -58,9 +64,9 @@ File.open('targetPaths.txt', "r:utf-8") do |f|
 		csv_line << ','
 		csv_line << set_exif_date(pic.date_time_original)
 		csv_line << ','
-		csv_line << set_exif_int(pic.pixel_x_dimension)
+		csv_line << set_exif_int(original_img.columns)
 		csv_line << ','
-		csv_line << set_exif_int(pic.pixel_y_dimension)
+		csv_line << set_exif_int(original_img.rows)
 		csv_data.push(csv_line)
 	end
 end
