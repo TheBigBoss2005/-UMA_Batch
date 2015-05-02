@@ -9,5 +9,5 @@ if [ $# -ne 3 ]; then
   exit 1
 fi
 
-find $1 -name "*.jpg" -type f -mtime -$3 > targetPaths.txt
+find $1 -iname "*.jpg" -type f -mtime -$3 > targetPaths.txt
 ruby Image_processing.rb $2
